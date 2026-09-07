@@ -1,11 +1,29 @@
 [
     {
         "codigo": "001",
-        "nombre": "Metro",
-        "categoria": "Herramienta",
-        "unidad": "Metro",
+        "nombre": "Lechuga",
+        "categoria": "Hortalizas",
+        "unidad": "100",
+        "precio": 10.0,
+        "stock_minimo": 10,
+        "activo": true
+    },
+    {
+        "codigo": "002",
+        "nombre": "Lechuga crespa",
+        "categoria": "Hortalizas",
+        "unidad": "100",
+        "precio": 10.0,
+        "stock_minimo": 10,
+        "activo": true
+    },
+    {
+        "codigo": "003",
+        "nombre": "Papa",
+        "categoria": "Tuberculos",
+        "unidad": "200",
         "precio": 2000.0,
         "stock_minimo": 10,
-        "activo": false
+        "activo": true
     }
 ]

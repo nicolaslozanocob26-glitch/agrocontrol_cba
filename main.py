@@ -8,6 +8,7 @@ RUTA_VENTAS = "data/ventas.json"
 
 def cargar_datos(ruta):
     if not os.path.exists(ruta):
+        os.makedirs(os.path.dirname(ruta), exist_ok=True)
         return []
     try:
         with open(ruta, "r", encoding="utf-8") as archivo:
@@ -17,6 +18,7 @@ def cargar_datos(ruta):
 
 def guardar_datos(ruta, datos):
     try:
+        os.makedirs(os.path.dirname(ruta), exist_ok=True)
         with open(ruta, "w", encoding="utf-8") as archivo:
             json.dump(datos, archivo, indent=4, ensure_ascii=False)
     except OSError as error:
@@ -31,32 +33,47 @@ def cargar_todos_los_datos():
 
 def registrar_producto(productos):
     print("\n========== REGISTRAR PRODUCTO ==========")
-    codigo = input("Código del producto: ").strip().upper()
-
-    if not codigo:
-        print("Error: el código no puede estar vacío.")
-        return
-
-    for producto in productos:
-        if producto["codigo"] == codigo:
+    
+    while True:
+        codigo = input("Código del producto: ").strip().upper()
+        
+        if not codigo:
+            print("Error: el código no puede estar vacío.")
+            continue
+        
+        codigo_existe = False
+        for producto in productos:
+            if producto["codigo"] == codigo:
+                codigo_existe = True
+                break
+        
+        if codigo_existe:
             print("Error: el código del producto ya existe.")
-            return
-
-    nombre = input("Nombre del producto: ").strip()
-    if not nombre:
-        print("Error: el nombre no puede estar vacío.")
-        return
-
-    categoria = input("Categoría: ").strip()
-    if not categoria:
-        print("Error: la categoría no puede estar vacía.")
-        return
-
-    unidad = input("Unidad de medida: ").strip()
-    if not unidad:
-        print("Error: la unidad no puede estar vacía.")
-        return
-
+            continue
+        
+        break
+    
+    while True:
+        nombre = input("Nombre del producto: ").strip()
+        if not nombre:
+            print("Error: el nombre no puede estar vacío.")
+            continue
+        break
+    
+    while True:
+        categoria = input("Categoría: ").strip()
+        if not categoria:
+            print("Error: la categoría no puede estar vacía.")
+            continue
+        break
+    
+    while True:
+        unidad = input("Unidad: ").strip()
+        if not unidad:
+            print("Error: la unidad no puede estar vacía.")
+            continue
+        break
+    
     while True:
         try:
             precio = float(input("Precio: "))
@@ -65,7 +82,7 @@ def registrar_producto(productos):
             print("Error: el precio debe ser mayor que 0.")
         except ValueError:
             print("Error: ingrese un precio válido.")
-
+    
     while True:
         try:
             stock_minimo = int(input("Stock mínimo: "))
@@ -74,7 +91,7 @@ def registrar_producto(productos):
             print("Error: el stock mínimo no puede ser negativo.")
         except ValueError:
             print("Error: ingrese un número entero válido.")
-
+    
     producto = {
         "codigo": codigo,
         "nombre": nombre,
@@ -84,35 +101,50 @@ def registrar_producto(productos):
         "stock_minimo": stock_minimo,
         "activo": True
     }
-
+    
     productos.append(producto)
     guardar_datos(RUTA_PRODUCTOS, productos)
     print("Producto registrado correctamente.")
 
 def listar_productos(productos):
-    print("\n========== PRODUCTOS ACTIVOS ==========")
+    print("\n╔══════════════════════════════════════════════════════════════════════════════════╗")
+    print("║                              PRODUCTOS ACTIVOS                                   ║")
+    print("╠══════════════════════════════════════════════════════════════════════════════════╣")
+    
     productos_activos = [producto for producto in productos if producto["activo"]]
 
     if not productos_activos:
-        print("No hay productos activos registrados.")
+        print("║              No hay productos activos registrados.                            ║")
+        print("╚═══════════════════════════════════════════════════════════════════════════════╝")
         return
 
+    print(f"║ {'Código':<10} {'Nombre':<20} {'Categoría':<15} {'Unidad':<10} {'Precio':<12} {'Stock':<8} ║")
+    print("╠══════════════════════════════════════════════════════════════════════════════════╣")
+
     for producto in productos_activos:
-        print("-----------------------------------")
-        print("Código:", producto["codigo"])
-        print("Nombre:", producto["nombre"])
-        print("Categoría:", producto["categoria"])
-        print("Unidad:", producto["unidad"])
-        print("Precio:", producto["precio"])
-        print("Stock mínimo:", producto["stock_minimo"])
+        codigo = producto["codigo"][:10]
+        nombre = producto["nombre"][:20]
+        categoria = producto["categoria"][:15]
+        unidad = producto["unidad"][:10]
+        precio = f"${producto['precio']:.2f}"
+        stock_minimo = str(producto["stock_minimo"])
+        
+        print(f"║ {codigo:<10} {nombre:<20} {categoria:<15} {unidad:<10} {precio:<12} {stock_minimo:<8} ║")
+
+    print("╚══════════════════════════════════════════════════════════════════════════════════╝")
+    print(f"Total productos activos: {len(productos_activos)}")
 
 def buscar_producto(productos):
     print("\n========== BUSCAR PRODUCTO ==========")
-    busqueda = input("Ingrese código o parte del nombre: ").strip().lower()
-
-    if not busqueda:
-        print("Error: debe ingresar un criterio de búsqueda.")
-        return
+    
+    while True:
+        busqueda = input("Ingrese código o parte del nombre: ").strip().lower()
+        
+        if not busqueda:
+            print("Error: debe ingresar un criterio de búsqueda.")
+            continue
+        
+        break
 
     encontrados = []
 
@@ -127,38 +159,57 @@ def buscar_producto(productos):
         print("No se encontraron productos.")
         return
 
+    print("\n" + "-" * 80)
+    print(f"{'Código':<10} {'Nombre':<20} {'Categoría':<15} {'Unidad':<10} {'Precio':<12} {'Stock Min':<10}")
+    print("-" * 80)
+
     for producto in encontrados:
-        print("-----------------------------------")
-        print("Código:", producto["codigo"])
-        print("Nombre:", producto["nombre"])
-        print("Categoría:", producto["categoria"])
-        print("Unidad:", producto["unidad"])
-        print("Precio:", producto["precio"])
-        print("Stock mínimo:", producto["stock_minimo"])
+        codigo = producto["codigo"][:10]
+        nombre = producto["nombre"][:20]
+        categoria = producto["categoria"][:15]
+        unidad = producto["unidad"][:10]
+        precio = f"${producto['precio']:.2f}"
+        stock_minimo = str(producto["stock_minimo"])
+        
+        print(f"{codigo:<10} {nombre:<20} {categoria:<15} {unidad:<10} {precio:<12} {stock_minimo:<10}")
+
+    print("-" * 80)
+    print(f"Productos encontrados: {len(encontrados)}")
 
 def actualizar_producto(productos):
     print("\n========== ACTUALIZAR PRODUCTO ==========")
-    codigo = input("Código del producto a actualizar: ").strip().upper()
+    
+    while True:
+        codigo = input("Código del producto a actualizar: ").strip().upper()
+        
+        if not codigo:
+            print("Error: el código no puede estar vacío.")
+            continue
+        
+        producto_encontrado = None
 
-    producto_encontrado = None
+        for producto in productos:
+            if producto["codigo"] == codigo:
+                producto_encontrado = producto
+                break
 
-    for producto in productos:
-        if producto["codigo"] == codigo:
-            producto_encontrado = producto
-            break
+        if producto_encontrado is None:
+            print("Error: producto no encontrado. Intente nuevamente.")
+            continue
+        
+        break
 
-    if producto_encontrado is None:
-        print("Error: producto no encontrado.")
-        return
-
+    print("Deje vacío un campo si desea conservar su valor actual.")
+    
     nombre = input(f"Nombre [{producto_encontrado['nombre']}]: ").strip()
-    categoria = input(f"Categoría [{producto_encontrado['categoria']}]: ").strip()
-    unidad = input(f"Unidad [{producto_encontrado['unidad']}]: ").strip()
-
     if nombre:
         producto_encontrado["nombre"] = nombre
+    
+    categoria = input(f"Categoría [{producto_encontrado['categoria']}]: ").strip()
     if categoria:
         producto_encontrado["categoria"] = categoria
+    
+    unidad = input(f"Unidad [{producto_encontrado['unidad']}]: ").strip()
     if unidad:
         producto_encontrado["unidad"] = unidad
 
@@ -197,36 +248,63 @@ def actualizar_producto(productos):
 
 def desactivar_producto(productos):
     print("\n========== DESACTIVAR PRODUCTO ==========")
-    codigo = input("Código del producto: ").strip().upper()
+    
+    while True:
+        codigo = input("Código del producto: ").strip().upper()
+        
+        if not codigo:
+            print("Error: el código no puede estar vacío.")
+            continue
+        
+        producto_encontrado = None
+        
+        for producto in productos:
+            if producto["codigo"] == codigo:
+                producto_encontrado = producto
+                break
 
-    for producto in productos:
-        if producto["codigo"] == codigo:
-            if not producto["activo"]:
-                print("El producto ya está desactivado.")
-                return
-
-            producto["activo"] = False
-            guardar_datos(RUTA_PRODUCTOS, productos)
-            print("Producto desactivado correctamente.")
+        if producto_encontrado is None:
+            print("Error: producto no encontrado. Intente nuevamente.")
+            continue
+        
+        if not producto_encontrado["activo"]:
+            print("El producto ya está desactivado.")
             return
 
-    print("Error: producto no encontrado.")
+        producto_encontrado["activo"] = False
+        guardar_datos(RUTA_PRODUCTOS, productos)
+        print("Producto desactivado correctamente.")
+        return
+
 def activar_producto(productos):
     print("\n========== ACTIVAR PRODUCTO ==========")
-    codigo = input("Código del producto: ").strip().upper()
+    
+    while True:
+        codigo = input("Código del producto: ").strip().upper()
+        
+        if not codigo:
+            print("Error: el código no puede estar vacío.")
+            continue
+        
+        producto_encontrado = None
+        
+        for producto in productos:
+            if producto["codigo"] == codigo:
+                producto_encontrado = producto
+                break
 
-    for producto in productos:
-        if producto["codigo"] == codigo:
-            if producto["activo"]:
-                print("El producto ya está activo.")
-                return
-
-            producto["activo"] = True
-            guardar_datos(RUTA_PRODUCTOS, productos)
-            print("Producto activado correctamente.")
+        if producto_encontrado is None:
+            print("Error: producto no encontrado. Intente nuevamente.")
+            continue
+        
+        if producto_encontrado["activo"]:
+            print("El producto ya está activo.")
             return
 
-    print("Error: producto no encontrado.")
+        producto_encontrado["activo"] = True
+        guardar_datos(RUTA_PRODUCTOS, productos)
+        print("Producto activado correctamente.")
+        return
 
 def menu_productos(productos):
     while True:
@@ -251,7 +329,7 @@ def menu_productos(productos):
             actualizar_producto(productos)
         elif opcion == "5":
             desactivar_producto(productos)
-        elif opcion =="6":
+        elif opcion == "6":
             activar_producto(productos)
         elif opcion == "0":
             break
@@ -286,6 +364,12 @@ def main():
         if opcion == "1":
             menu_productos(productos)
         elif opcion == "0":
+            # Guardar datos antes de salir
+            guardar_datos(RUTA_PRODUCTOS, productos)
+            guardar_datos(RUTA_LOTES, lotes)
+            guardar_datos(RUTA_MOVIMIENTOS, movimientos)
+            guardar_datos(RUTA_VENTAS, ventas)
+            print("Datos guardados correctamente.")
             print("Saliendo de AgroControl CBA...")
             break
         else:
