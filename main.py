@@ -1,3 +1,36 @@
+import json
+import os
+
+RUTA_PRODUCTOS = "data/productos.json"
+RUTA_LOTES = "data/lotes.json"
+RUTA_MOVIMIENTOS = "data/movimientos.json"
+RUTA_VENTAS = "data/ventas.json"
+
+def cargar_datos(ruta):
+    if not os.path.exists(ruta):
+        return []
+
+    try:
+        with open(ruta, "r", encoding="utf-8") as archivo:
+            return json.load(archivo)
+    except (json.JSONDecodeError, OSError):
+        return []
+
+def guardar_datos(ruta, datos):
+    try:
+        with open(ruta, "w", encoding="utf-8") as archivo:
+            json.dump(datos, archivo, indent=4, ensure_ascii=False)
+    except OSError as error:
+        print("Error al guardar los datos:", error)
+
+def cargar_todos_los_datos():
+    productos = cargar_datos(RUTA_PRODUCTOS)
+    lotes = cargar_datos(RUTA_LOTES)
+    movimientos = cargar_datos(RUTA_MOVIMIENTOS)
+    ventas = cargar_datos(RUTA_VENTAS)
+
+    return productos, lotes, movimientos, ventas
+
 def mostrar_menu():
     print("==============================")
     print("      AGROCONTROL CBA")
@@ -14,6 +47,14 @@ def mostrar_menu():
 
 
 def main():
+    productos, lotes, movimientos, ventas = cargar_todos_los_datos()
+
+    print("Datos cargados correctamente.")
+    print("Productos:", len(productos))
+    print("Lotes:", len(lotes))
+    print("Movimientos:", len(movimientos))
+    print("Ventas:", len(ventas))
+
     while True:
         mostrar_menu()
 
