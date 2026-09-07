@@ -1,1 +1,11 @@
-[]
+[
+    {
+        "codigo": "001",
+        "nombre": "Metro",
+        "categoria": "Herramienta",
+        "unidad": "Metro",
+        "precio": 2000.0,
+        "stock_minimo": 10,
+        "activo": false
+    }
+]
