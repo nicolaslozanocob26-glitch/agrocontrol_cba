@@ -5,22 +5,14 @@
         "tipo": "ENTRADA",
         "cantidad": 50,
         "motivo": "Cosecha lote 001",
-        "fecha": "2026-09-10 14:42"
+        "fecha": "2026-09-10 16:18"
     },
     {
         "id": "M0002",
-        "producto_codigo": "002",
-        "tipo": "ENTRADA",
-        "cantidad": 50,
-        "motivo": "Cosecha lote 002",
-        "fecha": "2026-09-10 14:43"
-    },
-    {
-        "id": "M0003",
-        "producto_codigo": "003",
-        "tipo": "ENTRADA",
-        "cantidad": 3,
-        "motivo": "Cosecha lote 003",
-        "fecha": "2026-09-10 14:45"
+        "producto_codigo": "001",
+        "tipo": "SALIDA",
+        "cantidad": 40,
+        "motivo": "Venta",
+        "fecha": "2026-09-10 16:37"
     }
 ]
