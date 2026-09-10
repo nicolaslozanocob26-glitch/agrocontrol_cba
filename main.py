@@ -356,7 +356,7 @@ def registrar_lote(lotes, productos):
 
     lote = {
         "id_lote": id_lote,
-        "producto_codigo": codigo,
+        "producto_codigo": producto_encontrado["codigo"],
         "fecha_siembra": fecha,
         "area_m2": area,
         "cantidad_producida": 0,
@@ -437,12 +437,13 @@ def cambiar_estado_lote(lotes):
     print("Estado actualizado correctamente.")
 
 
-def menu_lotes(lotes, productos):
+def menu_lotes(lotes, productos, movimientos):
     while True:
         print("\n========== GESTIÓN DE LOTES ==========")
         print("1. Registrar lote")
         print("2. Listar lotes")
         print("3. Cambiar estado de lote")
+        print("4. Cosechar lote")
         print("0. Volver")
 
         opcion = input("Seleccione una opción: ")
@@ -456,11 +457,75 @@ def menu_lotes(lotes, productos):
         elif opcion == "3":
             cambiar_estado_lote(lotes)
 
+        elif opcion == "4":
+            cosechar_lote(lotes, movimientos)
+
         elif opcion == "0":
             break
 
         else:
             print("Opción inválida.")
+
+from datetime import datetime
+
+def cosechar_lote(lotes, movimientos):
+    print("\n========== COSECHAR LOTE ==========")
+
+    id_lote = input("ID del lote: ").strip().upper()
+
+    lote_encontrado = None
+
+    for lote in lotes:
+        if lote["id_lote"] == id_lote:
+            lote_encontrado = lote
+            break
+
+    if lote_encontrado is None:
+        print("Error: lote no encontrado.")
+        return
+
+    if lote_encontrado["estado"] == "COSECHADO":
+        print("Error: el lote ya fue cosechado.")
+        return
+
+    if lote_encontrado["estado"] == "CANCELADO":
+        print("Error: el lote está cancelado.")
+        return
+
+    while True:
+        try:
+            cantidad = int(input("Cantidad producida: "))
+
+            if cantidad > 0:
+                break
+
+            print("Error: la cantidad debe ser mayor que 0.")
+
+        except ValueError:
+            print("Error: ingrese un número entero válido.")
+
+    lote_encontrado["cantidad_producida"] = cantidad
+    lote_encontrado["estado"] = "COSECHADO"
+
+    numero = len(movimientos) + 1
+    id_movimiento = f"M{numero:04d}"
+
+    movimiento = {
+        "id": id_movimiento,
+        "producto_codigo": lote_encontrado["producto_codigo"],
+        "tipo": "ENTRADA",
+        "cantidad": cantidad,
+        "motivo": f"Cosecha lote {id_lote}",
+        "fecha": datetime.now().strftime("%Y-%m-%d %H:%M")
+    }
+
+    movimientos.append(movimiento)
+
+    guardar_datos(RUTA_LOTES, lotes)
+    guardar_datos(RUTA_MOVIMIENTOS, movimientos)
+
+    print("Lote cosechado correctamente.")
+    print("Movimiento generado:", id_movimiento)
 def menu_productos(productos):
     while True:
         print("\n========== GESTIÓN DE PRODUCTOS ==========")
@@ -518,9 +583,9 @@ def main():
         if opcion == "1":
             menu_productos(productos)
         elif opcion == "2":
-            menu_lotes(lotes, productos)
+            menu_lotes(lotes, productos, movimientos)
         elif opcion == "0":
-            
+
             guardar_datos(RUTA_PRODUCTOS, productos)
             guardar_datos(RUTA_LOTES, lotes)
             guardar_datos(RUTA_MOVIMIENTOS, movimientos)

@@ -25,5 +25,14 @@
         "precio": 2000.0,
         "stock_minimo": 10,
         "activo": true
+    },
+    {
+        "codigo": "004",
+        "nombre": "Mazorca",
+        "categoria": "Grano",
+        "unidad": "10",
+        "precio": 1000.0,
+        "stock_minimo": 50,
+        "activo": true
     }
 ]
