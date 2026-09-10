@@ -305,7 +305,162 @@ def activar_producto(productos):
         guardar_datos(RUTA_PRODUCTOS, productos)
         print("Producto activado correctamente.")
         return
+from datetime import datetime
 
+def registrar_lote(lotes, productos):
+    print("\n========== REGISTRAR LOTE ==========")
+
+    id_lote = input("ID del lote: ").strip().upper()
+
+    if not id_lote:
+        print("Error: el ID no puede estar vacío.")
+        return
+
+    for lote in lotes:
+        if lote["id_lote"] == id_lote:
+            print("Error: el ID del lote ya existe.")
+            return
+
+    codigo = input("Código del producto: ").strip().upper()
+
+    producto_encontrado = None
+
+    for producto in productos:
+        if producto["codigo"] == codigo and producto["activo"]:
+            producto_encontrado = producto
+            break
+
+    if producto_encontrado is None:
+        print("Error: el producto no existe o está desactivado.")
+        return
+
+    fecha = input("Fecha de siembra (AAAA-MM-DD): ").strip()
+
+    try:
+        datetime.strptime(fecha, "%Y-%m-%d")
+    except ValueError:
+        print("Error: formato de fecha inválido.")
+        return
+
+    while True:
+        try:
+            area = float(input("Área en m2: "))
+
+            if area > 0:
+                break
+
+            print("Error: el área debe ser mayor que 0.")
+
+        except ValueError:
+            print("Error: ingrese un número válido.")
+
+    lote = {
+        "id_lote": id_lote,
+        "producto_codigo": codigo,
+        "fecha_siembra": fecha,
+        "area_m2": area,
+        "cantidad_producida": 0,
+        "estado": "EN_PRODUCCION"
+    }
+
+    lotes.append(lote)
+    guardar_datos(RUTA_LOTES, lotes)
+
+    print("Lote registrado correctamente.")
+
+
+def listar_lotes(lotes, productos):
+    print("\n========== LOTES PRODUCTIVOS ==========")
+
+    if not lotes:
+        print("No hay lotes registrados.")
+        return
+
+    for lote in lotes:
+        nombre_producto = "Producto no encontrado"
+
+        for producto in productos:
+            if producto["codigo"] == lote["producto_codigo"]:
+                nombre_producto = producto["nombre"]
+                break
+
+        print("-----------------------------------")
+        print("ID lote:", lote["id_lote"])
+        print("Producto:", lote["producto_codigo"], "-", nombre_producto)
+        print("Fecha de siembra:", lote["fecha_siembra"])
+        print("Área m2:", lote["area_m2"])
+        print("Cantidad producida:", lote["cantidad_producida"])
+        print("Estado:", lote["estado"])
+
+
+def cambiar_estado_lote(lotes):
+    print("\n========== CAMBIAR ESTADO DE LOTE ==========")
+
+    id_lote = input("ID del lote: ").strip().upper()
+
+    lote_encontrado = None
+
+    for lote in lotes:
+        if lote["id_lote"] == id_lote:
+            lote_encontrado = lote
+            break
+
+    if lote_encontrado is None:
+        print("Error: lote no encontrado.")
+        return
+
+    if lote_encontrado["estado"] == "COSECHADO":
+        print("Error: un lote cosechado no puede volver a cambiar de estado.")
+        return
+
+    print("1. EN_PRODUCCION")
+    print("2. COSECHADO")
+    print("3. CANCELADO")
+
+    opcion = input("Seleccione el nuevo estado: ")
+
+    if opcion == "1":
+        lote_encontrado["estado"] = "EN_PRODUCCION"
+
+    elif opcion == "2":
+        lote_encontrado["estado"] = "COSECHADO"
+
+    elif opcion == "3":
+        lote_encontrado["estado"] = "CANCELADO"
+
+    else:
+        print("Opción inválida.")
+        return
+
+    guardar_datos(RUTA_LOTES, lotes)
+
+    print("Estado actualizado correctamente.")
+
+
+def menu_lotes(lotes, productos):
+    while True:
+        print("\n========== GESTIÓN DE LOTES ==========")
+        print("1. Registrar lote")
+        print("2. Listar lotes")
+        print("3. Cambiar estado de lote")
+        print("0. Volver")
+
+        opcion = input("Seleccione una opción: ")
+
+        if opcion == "1":
+            registrar_lote(lotes, productos)
+
+        elif opcion == "2":
+            listar_lotes(lotes, productos)
+
+        elif opcion == "3":
+            cambiar_estado_lote(lotes)
+
+        elif opcion == "0":
+            break
+
+        else:
+            print("Opción inválida.")
 def menu_productos(productos):
     while True:
         print("\n========== GESTIÓN DE PRODUCTOS ==========")
@@ -347,7 +502,6 @@ def mostrar_menu():
     print("7. Reportes")
     print("8. Guardar datos")
     print("0. Salir")
-
 def main():
     productos, lotes, movimientos, ventas = cargar_todos_los_datos()
 
@@ -363,8 +517,10 @@ def main():
 
         if opcion == "1":
             menu_productos(productos)
+        elif opcion == "2":
+            menu_lotes(lotes, productos)
         elif opcion == "0":
-            # Guardar datos antes de salir
+            
             guardar_datos(RUTA_PRODUCTOS, productos)
             guardar_datos(RUTA_LOTES, lotes)
             guardar_datos(RUTA_MOVIMIENTOS, movimientos)

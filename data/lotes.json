@@ -1,1 +1,10 @@
-[]
+[
+    {
+        "id_lote": "001",
+        "producto_codigo": "001",
+        "fecha_siembra": "2026-05-26",
+        "area_m2": 100.0,
+        "cantidad_producida": 0,
+        "estado": "EN_PRODUCCION"
+    }
+]
