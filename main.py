@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 
 RUTA_PRODUCTOS = "data/productos.json"
 RUTA_LOTES = "data/lotes.json"
@@ -118,7 +119,7 @@ def listar_productos(productos):
         print("╚══════════════════════════════════════════════════════════════════════════════════╝")
         return
 
-    print(f"║ {'Código':<10} {'Nombre':<20} {'Categoría':<15} {'Unidad':<10} {'Precio':<12} {'Stock':<8} ║")
+    print(f"║ {'Código':<10} {'Nombre':<20} {'Categoría':<15} {'Unidad':<10} {'Precio':<12} {'Stock mínimo':<8} ║")
     print("╠══════════════════════════════════════════════════════════════════════════════════╣")
 
     for producto in productos_activos:
@@ -168,7 +169,7 @@ def buscar_producto(productos):
         nombre = producto["nombre"][:20]
         categoria = producto["categoria"][:15]
         unidad = producto["unidad"][:10]
-        precio = f"${producto['precio']:.2f}"
+        precio = f"Precio: ${producto['precio']:,.0f}".replace(",", ".")
         stock_minimo = str(producto["stock_minimo"])
         
         print(f"{codigo:<10} {nombre:<20} {categoria:<15} {unidad:<10} {precio:<12} {stock_minimo:<10}")
@@ -305,7 +306,6 @@ def activar_producto(productos):
         guardar_datos(RUTA_PRODUCTOS, productos)
         print("Producto activado correctamente.")
         return
-from datetime import datetime
 
 def registrar_lote(lotes, productos):
     print("\n========== REGISTRAR LOTE ==========")
@@ -632,7 +632,6 @@ def menu_lotes(lotes, productos, movimientos):
         else:
             print("Opción inválida.")
 
-from datetime import datetime
 
 def cosechar_lote(lotes, movimientos):
     print("\n========== COSECHAR LOTE ==========")
