@@ -926,15 +926,36 @@ def menu_ventas(ventas, productos, movimientos):
 
 def generar_reporte(productos, lotes, movimientos, ventas):
     productos_activos = 0
+    valor_inventario = 0
+    total_ventas = 0
+    unidades_vendidas = 0
+    ventas_realizadas = len(ventas)
+    productos_vendidos = {}
 
     for producto in productos:
         if producto["activo"]:
             productos_activos += 1
-
-    total_ventas = 0
+            stock = calcular_stock(producto["codigo"], movimientos)
+            valor_inventario += stock * producto["precio"]
 
     for venta in ventas:
         total_ventas += venta["total"]
+
+        for item in venta.get("items", []):
+            unidades_vendidas += item["cantidad"]
+
+            codigo = item["codigo"]
+
+            if codigo in productos_vendidos:
+                productos_vendidos[codigo] += item["cantidad"]
+            else:
+                productos_vendidos[codigo] = item["cantidad"]
+
+    ranking = sorted(
+        productos_vendidos.items(),
+        key=lambda x: x[1],
+        reverse=True
+    )
 
     print("\n╔══════════════════════════════════════════════════════════════╗")
     print("║                       REPORTE GENERAL                        ║")
@@ -942,10 +963,34 @@ def generar_reporte(productos, lotes, movimientos, ventas):
     print(f"║ Productos activos:     {productos_activos:<34}    ║")
     print(f"║ Total de lotes:        {len(lotes):<34}    ║")
     print(f"║ Total movimientos:     {len(movimientos):<34}    ║")
-    print(f"║ Total ventas:          {len(ventas):<34}    ║")
-    print(f"║ Valor total ventas:    {f'${total_ventas:,.0f}'.replace(',', '.'):<34}    ║")
-    print("╚══════════════════════════════════════════════════════════════╝")
+    print(f"║ Valor del inventario:  {f'${valor_inventario:,.0f}'.replace(',', '.'):<34}    ║")
+    print("╠══════════════════════════════════════════════════════════════╣")
+    print("║                       REPORTE DE VENTAS                      ║")
+    print("╠══════════════════════════════════════════════════════════════╣")
+    print(f"║ Ventas realizadas:     {ventas_realizadas:<34}    ║")
+    print(f"║ Unidades vendidas:     {unidades_vendidas:<34}    ║")
+    print(f"║ Ingresos acumulados:   {f'${total_ventas:,.0f}'.replace(',', '.'):<34}    ║")
+    print("╠══════════════════════════════════════════════════════════════╣")
+    print("║                    TOP 3 PRODUCTOS VENDIDOS                  ║")
+    print("╠══════════════════════════════════════════════════════════════╣")
 
+    if not ranking:
+        print("║ No hay productos vendidos todavía.                           ║")
+    else:
+        posicion = 1
+
+        for codigo, cantidad in ranking[:3]:
+            nombre = codigo
+
+            for producto in productos:
+                if producto.get("codigo") == codigo:
+                    nombre = producto["nombre"]
+                    break
+
+            print(f"║ {posicion}. {nombre[:25]:<25} {cantidad:<10} Unidades             ║")
+            posicion += 1
+
+    print("╚══════════════════════════════════════════════════════════════╝")
 def menu_productos(productos):
     while True:
         print("\n========== GESTIÓN DE PRODUCTOS ==========")
