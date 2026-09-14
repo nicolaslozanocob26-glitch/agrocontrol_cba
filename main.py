@@ -550,9 +550,9 @@ def listar_inventario(productos, movimientos):
     print("╚══════════════════════════════════════════════════════════════════════════════════╝")
 
 def alertas_stock(productos, movimientos):
-    print("\n╔══════════════════════════════════════════════════════════════════════╗")
-    print("║                         ALERTAS DE STOCK                            ║")
-    print("╠══════════════════════════════════════════════════════════════════════╣")
+    print("\n╔═══════════════════════════════════════════════════════╗")
+    print("║                   ALERTAS DE STOCK                    ║")
+    print("╠═══════════════════════════════════════════════════════╣")
 
     alertas = []
 
@@ -571,7 +571,7 @@ def alertas_stock(productos, movimientos):
         return
 
     print(f"║ {'Código':<10} {'Producto':<20} {'Stock':<10} {'Mínimo':<10} ║")
-    print("╠══════════════════════════════════════════════════════════════════════╣")
+    print("╠═══════════════════════════════════════════════════════╣")
 
     for producto, stock in alertas:
         codigo = producto["codigo"][:10]
@@ -580,7 +580,7 @@ def alertas_stock(productos, movimientos):
 
         print(f"║ {codigo:<10} {nombre:<20} {stock:<10} {minimo:<10} ║")
 
-    print("╚══════════════════════════════════════════════════════════════════════╝")
+    print("╚═══════════════════════════════════════════════════════╝")
     print(f"Productos con stock bajo: {len(alertas)}")
 
 def menu_inventario(movimientos, productos):
@@ -883,11 +883,10 @@ def mostrar_menu():
     print("1. Gestión de productos")
     print("2. Gestión de lotes productivos")
     print("3. Movimientos de inventario")
-    print("4. Registrar venta")
-    print("5. Consultar ventas")
-    print("6. Alertas de stock")
-    print("7. Reportes")
-    print("8. Guardar datos")
+    print("4. Ventas")
+    print("5. Alertas de stock")
+    print("6. Reportes")
+    print("7. Guardar datos")
     print("0. Salir")
 def main():
     productos, lotes, movimientos, ventas = cargar_todos_los_datos()
@@ -911,18 +910,16 @@ def main():
         elif opcion == "4":
             menu_ventas(ventas, productos, movimientos)
         elif opcion == "5":
-            listar_ventas(ventas, productos)
-        elif opcion == "6":
             alertas_stock(productos, movimientos)
-        elif opcion == "7":
+        elif opcion == "6":
             generar_reporte(productos, lotes, movimientos, ventas)
-        elif opcion == "0":
-
+        elif opcion == "7":
             guardar_datos(RUTA_PRODUCTOS, productos)
             guardar_datos(RUTA_LOTES, lotes)
             guardar_datos(RUTA_MOVIMIENTOS, movimientos)
             guardar_datos(RUTA_VENTAS, ventas)
             print("Datos guardados correctamente.")
+        elif opcion == "0":
             print("Saliendo de AgroControl CBA...")
             break
         else:
