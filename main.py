@@ -830,6 +830,28 @@ def menu_ventas(ventas, productos, movimientos):
         else:
             print("Opción inválida.")
 
+def generar_reporte(productos, lotes, movimientos, ventas):
+    productos_activos = 0
+
+    for producto in productos:
+        if producto["activo"]:
+            productos_activos += 1
+
+    total_ventas = 0
+
+    for venta in ventas:
+        total_ventas += venta["total"]
+
+    print("\n╔══════════════════════════════════════════════════════════════╗")
+    print("║                       REPORTE GENERAL                        ║")
+    print("╠══════════════════════════════════════════════════════════════╣")
+    print(f"║ Productos activos:     {productos_activos:<34}    ║")
+    print(f"║ Total de lotes:        {len(lotes):<34}    ║")
+    print(f"║ Total movimientos:     {len(movimientos):<34}    ║")
+    print(f"║ Total ventas:          {len(ventas):<34}    ║")
+    print(f"║ Valor total ventas:    {f'${total_ventas:,.0f}'.replace(',', '.'):<34}    ║")
+    print("╚══════════════════════════════════════════════════════════════╝")
+
 def menu_productos(productos):
     while True:
         print("\n========== GESTIÓN DE PRODUCTOS ==========")
@@ -896,6 +918,8 @@ def main():
             listar_ventas(ventas, productos)
         elif opcion == "6":
             alertas_stock(productos, movimientos)
+        elif opcion == "7":
+            generar_reporte(productos, lotes, movimientos, ventas)
         elif opcion == "0":
 
             guardar_datos(RUTA_PRODUCTOS, productos)
