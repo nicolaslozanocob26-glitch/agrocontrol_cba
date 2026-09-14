@@ -120,3 +120,6 @@ agrocontrol_cba/
 │
 ├── README.md
 └── .gitignore
+## Estado del proyecto
+
+Proyecto finalizado y preparado para revisión y entrega.

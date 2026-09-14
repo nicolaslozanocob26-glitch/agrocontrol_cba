@@ -14,5 +14,29 @@
         "cantidad": 20,
         "motivo": "Cosecha lote L01",
         "fecha": "2026-09-14 15:02"
+    },
+    {
+        "id": "M0003",
+        "producto_codigo": "001",
+        "tipo": "ENTRADA",
+        "cantidad": 10,
+        "motivo": "Compra",
+        "fecha": "2026-09-14 17:32"
+    },
+    {
+        "id": "M0004",
+        "producto_codigo": "001",
+        "tipo": "SALIDA",
+        "cantidad": 5,
+        "motivo": "Venta V0001",
+        "fecha": "2026-09-14 17:39"
+    },
+    {
+        "id": "M0005",
+        "producto_codigo": "001",
+        "tipo": "ENTRADA",
+        "cantidad": 10,
+        "motivo": "Compra",
+        "fecha": "2026-09-14 17:59"
     }
 ]

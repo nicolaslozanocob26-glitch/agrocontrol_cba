@@ -453,6 +453,59 @@ def calcular_stock(producto_codigo, movimientos):
 
     return stock
 
+def registrar_entrada(movimientos, productos):
+    print("\n========== REGISTRAR ENTRADA ==========")
+
+    codigo = input("Código del producto: ").strip().upper()
+
+    producto_encontrado = None
+
+    for producto in productos:
+        if producto["codigo"] == codigo and producto["activo"]:
+            producto_encontrado = producto
+            break
+
+    if producto_encontrado is None:
+        print("Error: producto no encontrado o desactivado.")
+        return
+
+    while True:
+        try:
+            cantidad = int(input("Cantidad de entrada: "))
+
+            if cantidad > 0:
+                break
+
+            print("Error: la cantidad debe ser mayor que 0.")
+        except ValueError:
+            print("Error: ingrese un número entero válido.")
+
+    while True:
+        motivo = input("Motivo de la entrada: ").strip()
+
+        if motivo:
+            break
+
+        print("Error: el motivo es obligatorio.")
+
+    numero = len(movimientos) + 1
+    id_movimiento = f"M{numero:04d}"
+
+    movimiento = {
+        "id": id_movimiento,
+        "producto_codigo": codigo,
+        "tipo": "ENTRADA",
+        "cantidad": cantidad,
+        "motivo": motivo,
+        "fecha": datetime.now().strftime("%Y-%m-%d %H:%M")
+    }
+
+    movimientos.append(movimiento)
+    guardar_datos(RUTA_MOVIMIENTOS, movimientos)
+
+    print("Entrada registrada correctamente.")
+    print("Movimiento generado:", id_movimiento)
+
 def registrar_salida(movimientos, productos):
     print("\n========== REGISTRAR SALIDA ==========")
 
@@ -487,7 +540,13 @@ def registrar_salida(movimientos, productos):
         except ValueError:
             print("Error: ingrese un número entero válido.")
 
-    motivo = input("Motivo de la salida: ").strip()
+    while True:
+        motivo = input("Motivo de la salida: ").strip()
+
+        if motivo:
+            break
+
+    print("Error: el motivo es obligatorio.")
 
     numero = len(movimientos) + 1
     id_movimiento = f"M{numero:04d}"
@@ -527,7 +586,7 @@ def listar_inventario(productos, movimientos):
 
         stock = calcular_stock(producto["codigo"], movimientos)
 
-        if stock < producto["stock_minimo"]:
+        if stock <= producto["stock_minimo"]:
             estado = "BAJO"
         else:
             estado = "OK"
@@ -562,7 +621,7 @@ def alertas_stock(productos, movimientos):
 
         stock = calcular_stock(producto["codigo"], movimientos)
 
-        if stock < producto["stock_minimo"]:
+        if stock <= producto["stock_minimo"]:
             alertas.append((producto, stock))
 
     if not alertas:
@@ -586,15 +645,18 @@ def alertas_stock(productos, movimientos):
 def menu_inventario(movimientos, productos):
     while True:
         print("\n========== INVENTARIO ==========")
-        print("1. Registrar salida")
-        print("2. Listar inventario")
+        print("1. Registrar entrada")
+        print("2. Registrar salida")
+        print("3. Listar inventario")
         print("0. Volver")
 
         opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
-            registrar_salida(movimientos, productos)
+            registrar_entrada(movimientos, productos)
         elif opcion == "2":
+            registrar_salida(movimientos, productos)
+        elif opcion == "3":
             listar_inventario(productos, movimientos)
         elif opcion == "0":
             break
@@ -693,80 +755,118 @@ def cosechar_lote(lotes, movimientos):
     print("Movimiento generado:", id_movimiento)
 
 
-def registrar_venta(ventas, productos, movimientos):
+def registrar_venta(ventas, movimientos, productos):
     print("\n========== REGISTRAR VENTA ==========")
 
-    codigo = input("Código del producto: ").strip().upper()
-
-    producto_encontrado = None
-
-    for producto in productos:
-        if producto["codigo"] == codigo and producto["activo"]:
-            producto_encontrado = producto
-            break
-
-    if producto_encontrado is None:
-        print("Error: producto no encontrado o desactivado.")
-        return
-
-    stock_actual = calcular_stock(codigo, movimientos)
-
-    print("Producto:", producto_encontrado["nombre"])
-    print("Precio:", f"${producto_encontrado['precio']:,.0f}".replace(",", "."))
-    print("Stock actual:", stock_actual)
+    items = []
 
     while True:
-        try:
-            cantidad = int(input("Cantidad: "))
+        codigo = input("Código del producto (0 para finalizar): ").strip().upper()
 
-            if cantidad <= 0:
-                print("Error: la cantidad debe ser mayor que 0.")
-            elif cantidad > stock_actual:
-                print("Error: no hay suficiente stock.")
-            else:
+        if codigo == "0":
+            break
+
+        producto_encontrado = None
+
+        for producto in productos:
+            if producto["codigo"] == codigo and producto["activo"]:
+                producto_encontrado = producto
                 break
 
-        except ValueError:
-            print("Error: ingrese un número entero válido.")
+        if producto_encontrado is None:
+            print("Error: producto no encontrado o desactivado.")
+            continue
 
-    total = producto_encontrado["precio"] * cantidad
+        for item in items:
+            if item["codigo"] == codigo:
+                print("Error: el producto ya fue agregado a la venta.")
+                producto_encontrado = None
+                break
+
+        if producto_encontrado is None:
+            continue
+
+        stock_actual = calcular_stock(codigo, movimientos)
+
+        print("Stock disponible:", stock_actual)
+
+        while True:
+            try:
+                cantidad = int(input("Cantidad: "))
+
+                if cantidad <= 0:
+                    print("Error: la cantidad debe ser mayor que 0.")
+                elif cantidad > stock_actual:
+                    print("Error: stock insuficiente.")
+                else:
+                    break
+            except ValueError:
+                print("Error: ingrese un número entero válido.")
+
+        precio_unitario = producto_encontrado["precio"]
+        subtotal = cantidad * precio_unitario
+
+        item = {
+            "codigo": codigo,
+            "cantidad": cantidad,
+            "precio_unitario": precio_unitario,
+            "subtotal": subtotal
+        }
+
+        items.append(item)
+
+        print("Producto agregado.")
+        print("Subtotal:", f"${subtotal:,.0f}".replace(",", "."))
+
+    if not items:
+        print("Venta cancelada.")
+        return
 
     numero = len(ventas) + 1
     id_venta = f"V{numero:04d}"
 
+    total = sum(item["subtotal"] for item in items)
+
     venta = {
         "id": id_venta,
-        "producto_codigo": codigo,
-        "cantidad": cantidad,
-        "precio_unitario": producto_encontrado["precio"],
-        "total": total,
-        "fecha": datetime.now().strftime("%Y-%m-%d %H:%M")
+        "fecha": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "items": items,
+        "total": total
     }
+
+    for item in items:
+        movimiento = {
+            "id": f"M{len(movimientos) + 1:04d}",
+            "producto_codigo": item["codigo"],
+            "tipo": "SALIDA",
+            "cantidad": item["cantidad"],
+            "motivo": f"Venta {id_venta}",
+            "fecha": datetime.now().strftime("%Y-%m-%d %H:%M")
+        }
+
+        movimientos.append(movimiento)
 
     ventas.append(venta)
-
-    numero_movimiento = len(movimientos) + 1
-    id_movimiento = f"M{numero_movimiento:04d}"
-
-    movimiento = {
-        "id": id_movimiento,
-        "producto_codigo": codigo,
-        "tipo": "SALIDA",
-        "cantidad": cantidad,
-        "motivo": f"Venta {id_venta}",
-        "fecha": datetime.now().strftime("%Y-%m-%d %H:%M")
-    }
-
-    movimientos.append(movimiento)
 
     guardar_datos(RUTA_VENTAS, ventas)
     guardar_datos(RUTA_MOVIMIENTOS, movimientos)
 
-    print("Venta registrada correctamente.")
-    print("ID venta:", id_venta)
-    print("Total:", f"${total:,.0f}".replace(",", "."))
-    print("Movimiento generado:", id_movimiento)
+    print("\n========== RESUMEN DE VENTA ==========")
+    print("Venta:", id_venta)
 
+    for item in items:
+        print(
+            item["codigo"],
+            "| Cantidad:",
+            item["cantidad"],
+            "| Precio:",
+            f"${item['precio_unitario']:,.0f}".replace(",", "."),
+            "| Subtotal:",
+            f"${item['subtotal']:,.0f}".replace(",", ".")
+        )
+
+    print("TOTAL:", f"${total:,.0f}".replace(",", "."))
+    print("Venta registrada correctamente.")
 def listar_ventas(ventas, productos):
     print("\n╔════════════════════════════════════════════════════════════════════════════════════════════╗")
     print("║                                      VENTAS                                                ║")
@@ -777,36 +877,41 @@ def listar_ventas(ventas, productos):
         print("╚════════════════════════════════════════════════════════════════════════════════════════════╝")
         return
 
-    print(f"║ {'ID':<8} {'Producto':<20} {'Cantidad':<10} {'Precio':<15} {'Total':<15} {'Fecha':<17} ║")
+    print(f"║ {'ID':<8} {'Producto':<20} {'Cantidad':<10} {'Precio':<15} {'Subtotal':<15} {'Fecha':<17} ║")
     print("╠════════════════════════════════════════════════════════════════════════════════════════════╣")
 
     for venta in ventas:
-        nombre_producto = "No encontrado"
+        for item in venta.get("items", []):
+            nombre_producto = "No encontrado"
 
-        for producto in productos:
-            if producto["codigo"] == venta["producto_codigo"]:
-                nombre_producto = producto["nombre"]
-                break
+            for producto in productos:
+                if producto.get("codigo") == item["codigo"]:
+                    nombre_producto = producto["nombre"]
+                    break
 
-        id_venta = venta["id"][:8]
-        nombre = nombre_producto[:20]
-        cantidad = str(venta["cantidad"])
-        precio = f"${venta['precio_unitario']:,.0f}".replace(",", ".")
+            id_venta = venta["id"][:8]
+            nombre = nombre_producto[:20]
+            cantidad = str(item["cantidad"])
+            precio = f"${item['precio_unitario']:,.0f}".replace(",", ".")
+            subtotal = f"${item['subtotal']:,.0f}".replace(",", ".")
+            fecha = venta["fecha"][:17]
+
+            print(
+                f"║ {id_venta:<8} "
+                f"{nombre:<20} "
+                f"{cantidad:<10} "
+                f"{precio:<15} "
+                f"{subtotal:<15} "
+                f"{fecha:<17} ║"
+            )
+
+        print("╠════════════════════════════════════════════════════════════════════════════════════════════╣")
+
         total = f"${venta['total']:,.0f}".replace(",", ".")
-        fecha = venta["fecha"][:17]
-
-        print(
-            f"║ {id_venta:<8} "
-            f"{nombre:<20} "
-            f"{cantidad:<10} "
-            f"{precio:<15} "
-            f"{total:<15} "
-            f"{fecha:<17} ║"
-        )
+        print(f"║ {'TOTAL DE VENTA:':<58}                  {total:<15}║")
 
     print("╚════════════════════════════════════════════════════════════════════════════════════════════╝")
     print(f"Total de ventas: {len(ventas)}")
-
 def menu_ventas(ventas, productos, movimientos):
     while True:
         print("\n========== VENTAS ==========")
@@ -817,7 +922,7 @@ def menu_ventas(ventas, productos, movimientos):
         opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
-            registrar_venta(ventas, productos, movimientos)
+            registrar_venta(ventas, movimientos, productos)
         elif opcion == "2":
             listar_ventas(ventas, productos)
         elif opcion == "0":
@@ -827,15 +932,36 @@ def menu_ventas(ventas, productos, movimientos):
 
 def generar_reporte(productos, lotes, movimientos, ventas):
     productos_activos = 0
+    valor_inventario = 0
+    total_ventas = 0
+    unidades_vendidas = 0
+    ventas_realizadas = len(ventas)
+    productos_vendidos = {}
 
     for producto in productos:
         if producto["activo"]:
             productos_activos += 1
-
-    total_ventas = 0
+            stock = calcular_stock(producto["codigo"], movimientos)
+            valor_inventario += stock * producto["precio"]
 
     for venta in ventas:
         total_ventas += venta["total"]
+
+        for item in venta.get("items", []):
+            unidades_vendidas += item["cantidad"]
+
+            codigo = item["codigo"]
+
+            if codigo in productos_vendidos:
+                productos_vendidos[codigo] += item["cantidad"]
+            else:
+                productos_vendidos[codigo] = item["cantidad"]
+
+    ranking = sorted(
+        productos_vendidos.items(),
+        key=lambda x: x[1],
+        reverse=True
+    )
 
     print("\n╔══════════════════════════════════════════════════════════════╗")
     print("║                       REPORTE GENERAL                        ║")
@@ -843,10 +969,34 @@ def generar_reporte(productos, lotes, movimientos, ventas):
     print(f"║ Productos activos:     {productos_activos:<34}    ║")
     print(f"║ Total de lotes:        {len(lotes):<34}    ║")
     print(f"║ Total movimientos:     {len(movimientos):<34}    ║")
-    print(f"║ Total ventas:          {len(ventas):<34}    ║")
-    print(f"║ Valor total ventas:    {f'${total_ventas:,.0f}'.replace(',', '.'):<34}    ║")
-    print("╚══════════════════════════════════════════════════════════════╝")
+    print(f"║ Valor del inventario:  {f'${valor_inventario:,.0f}'.replace(',', '.'):<34}    ║")
+    print("╠══════════════════════════════════════════════════════════════╣")
+    print("║                       REPORTE DE VENTAS                      ║")
+    print("╠══════════════════════════════════════════════════════════════╣")
+    print(f"║ Ventas realizadas:     {ventas_realizadas:<34}    ║")
+    print(f"║ Unidades vendidas:     {unidades_vendidas:<34}    ║")
+    print(f"║ Ingresos acumulados:   {f'${total_ventas:,.0f}'.replace(',', '.'):<34}    ║")
+    print("╠══════════════════════════════════════════════════════════════╣")
+    print("║                    TOP 3 PRODUCTOS VENDIDOS                  ║")
+    print("╠══════════════════════════════════════════════════════════════╣")
 
+    if not ranking:
+        print("║ No hay productos vendidos todavía.                           ║")
+    else:
+        posicion = 1
+
+        for codigo, cantidad in ranking[:3]:
+            nombre = codigo
+
+            for producto in productos:
+                if producto.get("codigo") == codigo:
+                    nombre = producto["nombre"]
+                    break
+
+            print(f"║ {posicion}. {nombre[:25]:<25} {cantidad:<10} Unidades             ║")
+            posicion += 1
+
+    print("╚══════════════════════════════════════════════════════════════╝")
 def menu_productos(productos):
     while True:
         print("\n========== GESTIÓN DE PRODUCTOS ==========")
@@ -922,7 +1072,7 @@ def main():
             print("Saliendo de AgroControl CBA...")
             break
         else:
-            print("Opción no implementada todavía.")
+            print("Opción inválida.")
 
 if __name__ == "__main__":
     main()
