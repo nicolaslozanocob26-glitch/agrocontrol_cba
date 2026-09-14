@@ -871,36 +871,41 @@ def listar_ventas(ventas, productos):
         print("╚════════════════════════════════════════════════════════════════════════════════════════════╝")
         return
 
-    print(f"║ {'ID':<8} {'Producto':<20} {'Cantidad':<10} {'Precio':<15} {'Total':<15} {'Fecha':<17} ║")
+    print(f"║ {'ID':<8} {'Producto':<20} {'Cantidad':<10} {'Precio':<15} {'Subtotal':<15} {'Fecha':<17} ║")
     print("╠════════════════════════════════════════════════════════════════════════════════════════════╣")
 
     for venta in ventas:
-        nombre_producto = "No encontrado"
+        for item in venta.get("items", []):
+            nombre_producto = "No encontrado"
 
-        for producto in productos:
-            if producto["codigo"] == venta["producto_codigo"]:
-                nombre_producto = producto["nombre"]
-                break
+            for producto in productos:
+                if producto.get("codigo") == item["codigo"]:
+                    nombre_producto = producto["nombre"]
+                    break
 
-        id_venta = venta["id"][:8]
-        nombre = nombre_producto[:20]
-        cantidad = str(venta["cantidad"])
-        precio = f"${venta['precio_unitario']:,.0f}".replace(",", ".")
+            id_venta = venta["id"][:8]
+            nombre = nombre_producto[:20]
+            cantidad = str(item["cantidad"])
+            precio = f"${item['precio_unitario']:,.0f}".replace(",", ".")
+            subtotal = f"${item['subtotal']:,.0f}".replace(",", ".")
+            fecha = venta["fecha"][:17]
+
+            print(
+                f"║ {id_venta:<8} "
+                f"{nombre:<20} "
+                f"{cantidad:<10} "
+                f"{precio:<15} "
+                f"{subtotal:<15} "
+                f"{fecha:<17} ║"
+            )
+
+        print("╠════════════════════════════════════════════════════════════════════════════════════════════╣")
+
         total = f"${venta['total']:,.0f}".replace(",", ".")
-        fecha = venta["fecha"][:17]
-
-        print(
-            f"║ {id_venta:<8} "
-            f"{nombre:<20} "
-            f"{cantidad:<10} "
-            f"{precio:<15} "
-            f"{total:<15} "
-            f"{fecha:<17} ║"
-        )
+        print(f"║ {'TOTAL DE VENTA:':<58}                  {total:<15}║")
 
     print("╚════════════════════════════════════════════════════════════════════════════════════════════╝")
     print(f"Total de ventas: {len(ventas)}")
-
 def menu_ventas(ventas, productos, movimientos):
     while True:
         print("\n========== VENTAS ==========")
