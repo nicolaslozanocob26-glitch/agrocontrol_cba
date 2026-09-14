@@ -375,7 +375,7 @@ def listar_lotes(lotes, productos):
     print("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣")
 
     if not lotes:
-        print("║                         No hay lotes registrados.                                             ║")
+        print("║                            No hay lotes registrados.                                             ║")
         print("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝")
         return
 
@@ -552,6 +552,40 @@ def listar_inventario(productos, movimientos):
         )
 
     print("╚══════════════════════════════════════════════════════════════════════════════════╝")
+
+def alertas_stock(productos, movimientos):
+    print("\n╔══════════════════════════════════════════════════════════════════════╗")
+    print("║                         ALERTAS DE STOCK                            ║")
+    print("╠══════════════════════════════════════════════════════════════════════╣")
+
+    alertas = []
+
+    for producto in productos:
+        if not producto["activo"]:
+            continue
+
+        stock = calcular_stock(producto["codigo"], movimientos)
+
+        if stock < producto["stock_minimo"]:
+            alertas.append((producto, stock))
+
+    if not alertas:
+        print("║              No hay productos con stock bajo.                     ║")
+        print("╚══════════════════════════════════════════════════════════════════════╝")
+        return
+
+    print(f"║ {'Código':<10} {'Producto':<20} {'Stock':<10} {'Mínimo':<10} ║")
+    print("╠══════════════════════════════════════════════════════════════════════╣")
+
+    for producto, stock in alertas:
+        codigo = producto["codigo"][:10]
+        nombre = producto["nombre"][:20]
+        minimo = str(producto["stock_minimo"])
+
+        print(f"║ {codigo:<10} {nombre:<20} {stock:<10} {minimo:<10} ║")
+
+    print("╚══════════════════════════════════════════════════════════════════════╝")
+    print(f"Productos con stock bajo: {len(alertas)}")
 
 def menu_inventario(movimientos, productos):
     while True:
@@ -858,6 +892,10 @@ def main():
             menu_inventario(movimientos, productos)
         elif opcion == "4":
             menu_ventas(ventas, productos, movimientos)
+        elif opcion == "5":
+            listar_ventas(ventas, productos)
+        elif opcion == "6":
+            alertas_stock(productos, movimientos)
         elif opcion == "0":
 
             guardar_datos(RUTA_PRODUCTOS, productos)

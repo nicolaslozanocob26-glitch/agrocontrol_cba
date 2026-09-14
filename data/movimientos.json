@@ -1,58 +1,18 @@
 [
     {
         "id": "M0001",
-        "producto_codigo": "001",
+        "producto_codigo": "002",
         "tipo": "ENTRADA",
         "cantidad": 50,
-        "motivo": "Cosecha lote 001",
-        "fecha": "2026-09-10 16:18"
+        "motivo": "Cosecha lote L02",
+        "fecha": "2026-09-14 15:00"
     },
     {
         "id": "M0002",
         "producto_codigo": "001",
-        "tipo": "SALIDA",
-        "cantidad": 40,
-        "motivo": "Venta",
-        "fecha": "2026-09-10 16:37"
-    },
-    {
-        "id": "M0003",
-        "producto_codigo": "001",
-        "tipo": "SALIDA",
-        "cantidad": 5,
-        "motivo": "VENTA",
-        "fecha": "2026-09-10 17:16"
-    },
-    {
-        "id": "M0004",
-        "producto_codigo": "001",
-        "tipo": "SALIDA",
-        "cantidad": 1,
-        "motivo": "Venta V0001",
-        "fecha": "2026-09-14 14:04"
-    },
-    {
-        "id": "M0005",
-        "producto_codigo": "001",
         "tipo": "ENTRADA",
-        "cantidad": 100,
-        "motivo": "Cosecha lote 003",
-        "fecha": "2026-09-14 14:29"
-    },
-    {
-        "id": "M0006",
-        "producto_codigo": "003",
-        "tipo": "ENTRADA",
-        "cantidad": 30,
-        "motivo": "Cosecha lote 002",
-        "fecha": "2026-09-14 14:29"
-    },
-    {
-        "id": "M0007",
-        "producto_codigo": "003",
-        "tipo": "SALIDA",
-        "cantidad": 10,
-        "motivo": "Venta V0002",
-        "fecha": "2026-09-14 14:30"
+        "cantidad": 20,
+        "motivo": "Cosecha lote L01",
+        "fecha": "2026-09-14 15:02"
     }
 ]

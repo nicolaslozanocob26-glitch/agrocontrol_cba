@@ -1,41 +1,25 @@
 [
     {
-        "id_lote": "001",
+        "id_lote": "L01",
         "producto_codigo": "001",
-        "fecha_siembra": "2026-05-20",
-        "area_m2": 20.0,
+        "fecha_siembra": "2026-08-22",
+        "area_m2": 100.0,
+        "cantidad_producida": 20,
+        "estado": "COSECHADO"
+    },
+    {
+        "id_lote": "L02",
+        "producto_codigo": "002",
+        "fecha_siembra": "2026-08-15",
+        "area_m2": 50.0,
         "cantidad_producida": 50,
         "estado": "COSECHADO"
     },
     {
-        "id_lote": "002",
+        "id_lote": "L03",
         "producto_codigo": "003",
-        "fecha_siembra": "2026-10-15",
-        "area_m2": 100.0,
-        "cantidad_producida": 30,
-        "estado": "COSECHADO"
-    },
-    {
-        "id_lote": "003",
-        "producto_codigo": "001",
-        "fecha_siembra": "2026-09-30",
-        "area_m2": 50.0,
-        "cantidad_producida": 100,
-        "estado": "COSECHADO"
-    },
-    {
-        "id_lote": "004",
-        "producto_codigo": "004",
-        "fecha_siembra": "2026-04-01",
-        "area_m2": 500.0,
-        "cantidad_producida": 0,
-        "estado": "EN_PRODUCCION"
-    },
-    {
-        "id_lote": "005",
-        "producto_codigo": "005",
-        "fecha_siembra": "2026-05-15",
-        "area_m2": 55.0,
+        "fecha_siembra": "2026-09-12",
+        "area_m2": 30.0,
         "cantidad_producida": 0,
         "estado": "EN_PRODUCCION"
     }
