@@ -540,7 +540,13 @@ def registrar_salida(movimientos, productos):
         except ValueError:
             print("Error: ingrese un número entero válido.")
 
-    motivo = input("Motivo de la salida: ").strip()
+    while True:
+        motivo = input("Motivo de la salida: ").strip()
+
+        if motivo:
+            break
+
+    print("Error: el motivo es obligatorio.")
 
     numero = len(movimientos) + 1
     id_movimiento = f"M{numero:04d}"
@@ -1066,7 +1072,7 @@ def main():
             print("Saliendo de AgroControl CBA...")
             break
         else:
-            print("Opción no implementada todavía.")
+            print("Opción inválida.")
 
 if __name__ == "__main__":
     main()
