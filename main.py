@@ -453,6 +453,59 @@ def calcular_stock(producto_codigo, movimientos):
 
     return stock
 
+def registrar_entrada(movimientos, productos):
+    print("\n========== REGISTRAR ENTRADA ==========")
+
+    codigo = input("Código del producto: ").strip().upper()
+
+    producto_encontrado = None
+
+    for producto in productos:
+        if producto["codigo"] == codigo and producto["activo"]:
+            producto_encontrado = producto
+            break
+
+    if producto_encontrado is None:
+        print("Error: producto no encontrado o desactivado.")
+        return
+
+    while True:
+        try:
+            cantidad = int(input("Cantidad de entrada: "))
+
+            if cantidad > 0:
+                break
+
+            print("Error: la cantidad debe ser mayor que 0.")
+        except ValueError:
+            print("Error: ingrese un número entero válido.")
+
+    while True:
+        motivo = input("Motivo de la entrada: ").strip()
+
+        if motivo:
+            break
+
+        print("Error: el motivo es obligatorio.")
+
+    numero = len(movimientos) + 1
+    id_movimiento = f"M{numero:04d}"
+
+    movimiento = {
+        "id": id_movimiento,
+        "producto_codigo": codigo,
+        "tipo": "ENTRADA",
+        "cantidad": cantidad,
+        "motivo": motivo,
+        "fecha": datetime.now().strftime("%Y-%m-%d %H:%M")
+    }
+
+    movimientos.append(movimiento)
+    guardar_datos(RUTA_MOVIMIENTOS, movimientos)
+
+    print("Entrada registrada correctamente.")
+    print("Movimiento generado:", id_movimiento)
+
 def registrar_salida(movimientos, productos):
     print("\n========== REGISTRAR SALIDA ==========")
 
@@ -586,15 +639,18 @@ def alertas_stock(productos, movimientos):
 def menu_inventario(movimientos, productos):
     while True:
         print("\n========== INVENTARIO ==========")
-        print("1. Registrar salida")
-        print("2. Listar inventario")
+        print("1. Registrar entrada")
+        print("2. Registrar salida")
+        print("3. Listar inventario")
         print("0. Volver")
 
         opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
-            registrar_salida(movimientos, productos)
+            registrar_entrada(movimientos, productos)
         elif opcion == "2":
+            registrar_salida(movimientos, productos)
+        elif opcion == "3":
             listar_inventario(productos, movimientos)
         elif opcion == "0":
             break
