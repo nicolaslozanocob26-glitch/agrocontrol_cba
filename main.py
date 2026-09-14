@@ -423,8 +423,7 @@ def cambiar_estado_lote(lotes):
         return
 
     print("1. EN_PRODUCCION")
-    print("2. COSECHADO")
-    print("3. CANCELADO")
+    print("2. CANCELADO")
 
     opcion = input("Seleccione el nuevo estado: ")
 
@@ -432,9 +431,6 @@ def cambiar_estado_lote(lotes):
         lote_encontrado["estado"] = "EN_PRODUCCION"
 
     elif opcion == "2":
-        lote_encontrado["estado"] = "COSECHADO"
-
-    elif opcion == "3":
         lote_encontrado["estado"] = "CANCELADO"
 
     else:
