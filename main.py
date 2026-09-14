@@ -580,7 +580,7 @@ def listar_inventario(productos, movimientos):
 
         stock = calcular_stock(producto["codigo"], movimientos)
 
-        if stock < producto["stock_minimo"]:
+        if stock <= producto["stock_minimo"]:
             estado = "BAJO"
         else:
             estado = "OK"
@@ -615,7 +615,7 @@ def alertas_stock(productos, movimientos):
 
         stock = calcular_stock(producto["codigo"], movimientos)
 
-        if stock < producto["stock_minimo"]:
+        if stock <= producto["stock_minimo"]:
             alertas.append((producto, stock))
 
     if not alertas:
