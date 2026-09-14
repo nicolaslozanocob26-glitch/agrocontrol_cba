@@ -662,6 +662,97 @@ def cosechar_lote(lotes, movimientos):
 
     print("Lote cosechado correctamente.")
     print("Movimiento generado:", id_movimiento)
+
+
+def registrar_venta(ventas, productos, movimientos):
+    print("\n========== REGISTRAR VENTA ==========")
+
+    codigo = input("Código del producto: ").strip().upper()
+
+    producto_encontrado = None
+
+    for producto in productos:
+        if producto["codigo"] == codigo and producto["activo"]:
+            producto_encontrado = producto
+            break
+
+    if producto_encontrado is None:
+        print("Error: producto no encontrado o desactivado.")
+        return
+
+    stock_actual = calcular_stock(codigo, movimientos)
+
+    print("Producto:", producto_encontrado["nombre"])
+    print("Precio:", f"${producto_encontrado['precio']:,.0f}".replace(",", "."))
+    print("Stock actual:", stock_actual)
+
+    while True:
+        try:
+            cantidad = int(input("Cantidad: "))
+
+            if cantidad <= 0:
+                print("Error: la cantidad debe ser mayor que 0.")
+            elif cantidad > stock_actual:
+                print("Error: no hay suficiente stock.")
+            else:
+                break
+
+        except ValueError:
+            print("Error: ingrese un número entero válido.")
+
+    total = producto_encontrado["precio"] * cantidad
+
+    numero = len(ventas) + 1
+    id_venta = f"V{numero:04d}"
+
+    venta = {
+        "id": id_venta,
+        "producto_codigo": codigo,
+        "cantidad": cantidad,
+        "precio_unitario": producto_encontrado["precio"],
+        "total": total,
+        "fecha": datetime.now().strftime("%Y-%m-%d %H:%M")
+    }
+
+    ventas.append(venta)
+
+    numero_movimiento = len(movimientos) + 1
+    id_movimiento = f"M{numero_movimiento:04d}"
+
+    movimiento = {
+        "id": id_movimiento,
+        "producto_codigo": codigo,
+        "tipo": "SALIDA",
+        "cantidad": cantidad,
+        "motivo": f"Venta {id_venta}",
+        "fecha": datetime.now().strftime("%Y-%m-%d %H:%M")
+    }
+
+    movimientos.append(movimiento)
+
+    guardar_datos(RUTA_VENTAS, ventas)
+    guardar_datos(RUTA_MOVIMIENTOS, movimientos)
+
+    print("Venta registrada correctamente.")
+    print("ID venta:", id_venta)
+    print("Total:", f"${total:,.0f}".replace(",", "."))
+    print("Movimiento generado:", id_movimiento)
+
+def menu_ventas(ventas, productos, movimientos):
+    while True:
+        print("\n========== VENTAS ==========")
+        print("1. Registrar venta")
+        print("0. Volver")
+
+        opcion = input("Seleccione una opción: ")
+
+        if opcion == "1":
+            registrar_venta(ventas, productos, movimientos)
+        elif opcion == "0":
+            break
+        else:
+            print("Opción inválida.")
+
 def menu_productos(productos):
     while True:
         print("\n========== GESTIÓN DE PRODUCTOS ==========")
@@ -722,6 +813,8 @@ def main():
             menu_lotes(lotes, productos, movimientos)
         elif opcion == "3":
             menu_inventario(movimientos, productos)
+        elif opcion == "4":
+            menu_ventas(ventas, productos, movimientos)
         elif opcion == "0":
 
             guardar_datos(RUTA_PRODUCTOS, productos)
