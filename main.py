@@ -738,16 +738,59 @@ def registrar_venta(ventas, productos, movimientos):
     print("Total:", f"${total:,.0f}".replace(",", "."))
     print("Movimiento generado:", id_movimiento)
 
+def listar_ventas(ventas, productos):
+    print("\n╔════════════════════════════════════════════════════════════════════════════════════════════╗")
+    print("║                                      VENTAS                                                ║")
+    print("╠════════════════════════════════════════════════════════════════════════════════════════════╣")
+
+    if not ventas:
+        print("║                         No hay ventas registradas.                                         ║")
+        print("╚════════════════════════════════════════════════════════════════════════════════════════════╝")
+        return
+
+    print(f"║ {'ID':<8} {'Producto':<20} {'Cantidad':<10} {'Precio':<15} {'Total':<15} {'Fecha':<17} ║")
+    print("╠════════════════════════════════════════════════════════════════════════════════════════════╣")
+
+    for venta in ventas:
+        nombre_producto = "No encontrado"
+
+        for producto in productos:
+            if producto["codigo"] == venta["producto_codigo"]:
+                nombre_producto = producto["nombre"]
+                break
+
+        id_venta = venta["id"][:8]
+        nombre = nombre_producto[:20]
+        cantidad = str(venta["cantidad"])
+        precio = f"${venta['precio_unitario']:,.0f}".replace(",", ".")
+        total = f"${venta['total']:,.0f}".replace(",", ".")
+        fecha = venta["fecha"][:17]
+
+        print(
+            f"║ {id_venta:<8} "
+            f"{nombre:<20} "
+            f"{cantidad:<10} "
+            f"{precio:<15} "
+            f"{total:<15} "
+            f"{fecha:<17} ║"
+        )
+
+    print("╚════════════════════════════════════════════════════════════════════════════════════════════╝")
+    print(f"Total de ventas: {len(ventas)}")
+
 def menu_ventas(ventas, productos, movimientos):
     while True:
         print("\n========== VENTAS ==========")
         print("1. Registrar venta")
+        print("2. Consultar ventas")
         print("0. Volver")
 
         opcion = input("Seleccione una opción: ")
 
         if opcion == "1":
             registrar_venta(ventas, productos, movimientos)
+        elif opcion == "2":
+            listar_ventas(ventas, productos)
         elif opcion == "0":
             break
         else:

@@ -12,16 +12,16 @@
         "producto_codigo": "003",
         "fecha_siembra": "2026-10-15",
         "area_m2": 100.0,
-        "cantidad_producida": 0,
-        "estado": "EN_PRODUCCION"
+        "cantidad_producida": 30,
+        "estado": "COSECHADO"
     },
     {
         "id_lote": "003",
         "producto_codigo": "001",
         "fecha_siembra": "2026-09-30",
         "area_m2": 50.0,
-        "cantidad_producida": 0,
-        "estado": "EN_PRODUCCION"
+        "cantidad_producida": 100,
+        "estado": "COSECHADO"
     },
     {
         "id_lote": "004",
