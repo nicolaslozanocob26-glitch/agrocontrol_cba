@@ -119,7 +119,7 @@ def listar_productos(productos):
         print("╚══════════════════════════════════════════════════════════════════════════════════╝")
         return
 
-    print(f"║ {'Código':<10} {'Nombre':<20} {'Categoría':<15} {'Unidad':<10} {'Precio':<12} {'Stock mínimo':<8} ║")
+    print(f"║ {'Código':<10} {'Nombre':<20} {'Categoría':<15} {'Unidad':<10} {'Precio':<12}{'Stock mín':<8} ║")
     print("╠══════════════════════════════════════════════════════════════════════════════════╣")
 
     for producto in productos_activos:
@@ -169,7 +169,7 @@ def buscar_producto(productos):
         nombre = producto["nombre"][:20]
         categoria = producto["categoria"][:15]
         unidad = producto["unidad"][:10]
-        precio = f"Precio: ${producto['precio']:,.0f}".replace(",", ".")
+        precio = f"${producto['precio']:,.0f}".replace(",", ".")
         stock_minimo = str(producto["stock_minimo"])
         
         print(f"{codigo:<10} {nombre:<20} {categoria:<15} {unidad:<10} {precio:<12} {stock_minimo:<10}")
@@ -546,7 +546,7 @@ def registrar_salida(movimientos, productos):
         if motivo:
             break
 
-    print("Error: el motivo es obligatorio.")
+        print("Error: el motivo es obligatorio.")
 
     numero = len(movimientos) + 1
     id_movimiento = f"M{numero:04d}"
@@ -1034,7 +1034,7 @@ def mostrar_menu():
     print("3. Movimientos de inventario")
     print("4. Ventas")
     print("5. Alertas de stock")
-    print("6. Reportes")
+    print("6. Reporte general")
     print("7. Guardar datos")
     print("0. Salir")
 def main():
